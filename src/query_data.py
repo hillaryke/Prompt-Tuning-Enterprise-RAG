@@ -1,8 +1,7 @@
 import argparse
 from dataclasses import dataclass
 from langchain_community.vectorstores.chroma import Chroma
-from langchain_openai import OpenAIEmbeddings
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 
 CHROMA_PATH = "chroma"
