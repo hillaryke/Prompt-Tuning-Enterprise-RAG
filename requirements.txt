@@ -7,3 +7,6 @@ datasets
 ipywidgets
 langchain
 langchain-community
+chromadb
+unstructured
+unstructured[md]
