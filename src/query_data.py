@@ -4,6 +4,21 @@ from langchain_community.vectorstores.chroma import Chroma
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 
+from rich import print as rprint
+from rich.console import Console
+from rich.table import Table
+from rich.theme import Theme
+
+custom_theme = Theme({
+    "info": "green",
+    "warning": "bold yellow",
+    "danger": "bold red",
+    "success": "bold green",
+})
+console = Console(theme=custom_theme)
+
+from pprint import pprint
+
 CHROMA_PATH = "chroma"
 
 PROMPT_TEMPLATE = """
@@ -44,17 +59,23 @@ def main():
         return
 
     context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
+
+    print("==============================================")
+    console.print(context_text, style="info")
+
+
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
     prompt = prompt_template.format(context=context_text, question=query_text)
     print(prompt)
 
     model = ChatOpenAI()
     # response_text = model.predict(prompt)
-    response_text = model.invoke(prompt)
+    response = model.invoke(prompt)
+    response_text = response.content
 
     sources = [doc.metadata.get("source", None) for doc, _score in results]
     formatted_response = f"Response: {response_text}\nSources: {sources}"
-    print(formatted_response)
+    # print(formatted_response)
 
 
 if __name__ == "__main__":
