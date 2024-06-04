@@ -1,7 +1,5 @@
 # Precision RAG: Prompt Tuning For Building Enterprise Grade RAG Systems
 
-# Scalable Data Warehouse for LLM Finetuning: API Design for High Throughput Data Ingestion and RAG Retrieval
-
 ## Introduction
 
 This project introduces a powerful Retrieval-Augmented Generation (RAG) system,
