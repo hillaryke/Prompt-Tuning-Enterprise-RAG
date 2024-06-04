@@ -4,6 +4,13 @@ from langchain_community.vectorstores.chroma import Chroma
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 
+from pprint import pprint
+
+from datasets import Dataset
+from ragas.metrics import faithfulness
+from ragas.metrics.critique import harmfulness
+from ragas import evaluate
+
 from rich import print as rprint
 from rich.console import Console
 from rich.table import Table
@@ -11,13 +18,14 @@ from rich.theme import Theme
 
 custom_theme = Theme({
     "info": "green",
-    "warning": "bold yellow",
+    "warning": "yellow",
+    "salmon": "light_salmon3",
     "danger": "bold red",
+    "plum": "plum2",
     "success": "bold green",
 })
 console = Console(theme=custom_theme)
 
-from pprint import pprint
 
 CHROMA_PATH = "chroma"
 
@@ -66,7 +74,7 @@ def main():
 
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
     prompt = prompt_template.format(context=context_text, question=query_text)
-    print(prompt)
+    console.print(prompt, style="warning")
 
     model = ChatOpenAI()
     # response_text = model.predict(prompt)
@@ -76,6 +84,20 @@ def main():
     sources = [doc.metadata.get("source", None) for doc, _score in results]
     formatted_response = f"Response: {response_text}\nSources: {sources}"
     # print(formatted_response)
+
+    data = {
+        'question': [query_text],
+        'answer': [response_text],
+        'contexts': [[doc.page_content for doc, _score in results]]
+    }
+
+    console.print(data, style="plum")
+
+    dataset = Dataset.from_dict(data)
+    score = evaluate(dataset, metrics=[faithfulness, harmfulness])
+    score.to_pandas()
+
+    console.print(score, style="success")
 
 
 if __name__ == "__main__":
