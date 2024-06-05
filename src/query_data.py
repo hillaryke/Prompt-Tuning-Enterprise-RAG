@@ -93,7 +93,9 @@ def main():
 
     console.print(data, style="plum")
 
+    # Convert the data to a Hugging Face Dataset type
     dataset = Dataset.from_dict(data)
+    # Evaluate the answer given the context using the faithfulness and harmfulness metrics.
     score = evaluate(dataset, metrics=[faithfulness, harmfulness])
     score.to_pandas()
 
