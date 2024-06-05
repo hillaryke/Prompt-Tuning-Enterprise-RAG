@@ -7,3 +7,12 @@ datasets
 ipywidgets
 langchain
 langchain-community
+chromadb
+unstructured
+unstructured[md]
+ragas
+rich
+langchainhub
+tiktoken
+langsmith
+fastapi
