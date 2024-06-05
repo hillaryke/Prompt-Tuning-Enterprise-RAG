@@ -10,3 +10,8 @@ langchain-community
 chromadb
 unstructured
 unstructured[md]
+ragas
+rich
+langchainhub
+tiktoken
+langsmith
