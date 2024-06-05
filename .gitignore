@@ -2,6 +2,8 @@ chroma
 data
 rag-from-scratch-main
 
+**node_modules
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
