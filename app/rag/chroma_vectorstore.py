@@ -18,4 +18,6 @@ def save_to_chroma(docs: list[Document]):
         shutil.rmtree(CHROMA_PATH)
 
     # Create a new DB from the documents.
-    db = Chroma.from_documents(documents=docs, embedding=OpenAIEmbeddings())
+    vectorstore = Chroma.from_documents(documents=docs, embedding=OpenAIEmbeddings())
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+    return retriever
