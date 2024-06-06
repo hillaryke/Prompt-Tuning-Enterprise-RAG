@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from langchain.document_loaders import TextLoader, DirectoryLoader
+from langchain_community.document_loaders import TextLoader, DirectoryLoader
 from langchain.text_splitter import MarkdownHeaderTextSplitter
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
