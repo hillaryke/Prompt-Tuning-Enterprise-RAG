@@ -9,6 +9,12 @@ import shutil
 CHROMA_PATH = "chroma"
 DATA_PATH = "data/books"
 
+from src.env_loader import load_api_key
+
+PROJECTPATH = load_api_key("PROJECTPATH")
+
+os.chdir(PROJECTPATH)
+
 
 def main():
     generate_data_store()
@@ -17,7 +23,8 @@ def main():
 def generate_data_store():
     documents = load_documents()
     chunks = split_text(documents)
-    save_to_chroma(chunks)
+    vector_store = save_to_chroma(chunks)
+    return vector_store
 
 
 def load_documents():
@@ -49,12 +56,13 @@ def save_to_chroma(chunks: list[Document]):
         shutil.rmtree(CHROMA_PATH)
 
     # Create a new DB from the documents.
-    db = Chroma.from_documents(
+    vector_store = Chroma.from_documents(
         chunks, OpenAIEmbeddings(), persist_directory=CHROMA_PATH
     )
     # db.persist is no longer needed because documents are automatically persisted.
     # db.persist()
     print(f"Saved {len(chunks)} chunks to {CHROMA_PATH}.")
+    return vector_store
 
 
 if __name__ == "__main__":

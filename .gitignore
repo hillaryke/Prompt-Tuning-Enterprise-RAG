@@ -2,6 +2,8 @@ chroma
 data
 rag-from-scratch-main
 
+*.txt
+
 **node_modules
 
 # Byte-compiled / optimized / DLL files

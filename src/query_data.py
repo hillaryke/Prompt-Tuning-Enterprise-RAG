@@ -16,6 +16,11 @@ from rich.console import Console
 from rich.table import Table
 from rich.theme import Theme
 
+from src.env_loader import load_api_key
+load_api_key()
+MODEL_NAME = "gpt-3.5-turbo"
+
+
 custom_theme = Theme({
     "info": "green",
     "warning": "yellow",
@@ -76,7 +81,8 @@ def main():
     prompt = prompt_template.format(context=context_text, question=query_text)
     console.print(prompt, style="warning")
 
-    model = ChatOpenAI()
+    model = ChatOpenAI(model="gpt-3.5-turbo")
+
     # response_text = model.predict(prompt)
     response = model.invoke(prompt)
     response_text = response.content
@@ -96,7 +102,10 @@ def main():
     # Convert the data to a Hugging Face Dataset type
     dataset = Dataset.from_dict(data)
     # Evaluate the answer given the context using the faithfulness and harmfulness metrics.
-    score = evaluate(dataset, metrics=[faithfulness, harmfulness])
+    # Use gpt-4o as the model to evaluate the answer.
+    faithfulness.llm = model
+
+    score = evaluate(dataset, metrics=[faithfulness])
     score.to_pandas()
 
     console.print(score, style="success")
