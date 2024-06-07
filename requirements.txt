@@ -29,3 +29,4 @@ ipytest
 giskard[llm]
 
 python-gemini-api
+streamlit
