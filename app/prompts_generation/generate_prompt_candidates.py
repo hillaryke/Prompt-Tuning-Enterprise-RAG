@@ -81,6 +81,7 @@ class PromptGenerator:
         ...
 
         Respond with the prompts, and nothing else. Be creative.
+        ENSURE THE PROMPT SOUNDS LIKE A QUESTION OR INSTRUCTION. Avoid making it sound like a statement.
         NEVER CHEAT BY INCLUDING SPECIFICS ABOUT THE TEST CASES IN YOUR PROMPT. 
         ANY PROMPTS WITH THOSE SPECIFIC EXAMPLES WILL BE DISQUALIFIED.
         IF YOU USE EXAMPLES, ALWAYS USE ONES THAT ARE VERY DIFFERENT FROM THE TEST CASES.
