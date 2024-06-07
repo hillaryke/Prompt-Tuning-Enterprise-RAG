@@ -1,1 +1,1 @@
-from .generate_prompt_candidates import generate_prompt_candidates
+from .generate_prompt_candidates import PromptGenerator
