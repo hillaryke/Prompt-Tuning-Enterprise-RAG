@@ -1,4 +1,5 @@
 import numpy as np
+from py import test
 from app.misc import Settings
 from langchain_core.prompts import SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain.prompts.chat import ChatPromptTemplate
@@ -36,7 +37,7 @@ def get_score(task_description, test_case, prompt_a, prompt_b, retreiver, embedd
         return comparePromptsUsingCosineSimilarity(test_case, embedding_model)
 
 
-def comparePromptsUsingLLM(task_description: str, test_case_scenario: str, answer_a: str, answer_b: str):
+def comparePromptsUsingLLM(task_description: str, test_case: TestCase, answer_a: str, answer_b: str):
     system_message_prompt = SystemMessagePromptTemplate.from_template(Settings.RANKING_PROMPT)
     human_message_prompt = HumanMessagePromptTemplate.from_template(
         """
@@ -53,7 +54,7 @@ def comparePromptsUsingLLM(task_description: str, test_case_scenario: str, answe
 
     prompt_input_variables = {
         "task_description": task_description, 
-        "test_case_scenario": test_case_scenario, 
+        "test_case_scenario": test_case.scenario, 
         "answer_a": answer_a, 
         "answer_b": answer_b
     }
