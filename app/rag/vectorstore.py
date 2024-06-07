@@ -1,7 +1,6 @@
 from langchain_community.document_loaders import DirectoryLoader, WebBaseLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
-from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores.chroma import Chroma
 from .embeddings import EmbeddingFactory
 import os

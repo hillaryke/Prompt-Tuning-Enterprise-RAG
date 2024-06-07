@@ -4,6 +4,8 @@ from langchain.chains.query_constructor.base import AttributeInfo
 class Settings:
     TEMPERATURE_GET_PROMPT_WINNER: Final = 0
 
+    NUMBER_OF_PROMPT_CANDIDATES: Final = 3
+
     HEADERS_TO_SPLIT: Final = [
         ("#", "Topic Header"),
         ("##", "Subtopic Header"),

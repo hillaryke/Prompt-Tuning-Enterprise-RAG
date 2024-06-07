@@ -1,5 +1,5 @@
 from json import load
-from langchain_openai import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from src.env_loader import load_api_key

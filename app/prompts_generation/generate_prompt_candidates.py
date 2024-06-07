@@ -1,3 +1,4 @@
+from multiprocessing import context
 from os import system
 from click import prompt
 import nest_asyncio
@@ -12,16 +13,18 @@ from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from langchain_core.prompts import SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain.prompts.chat import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from app.misc import Settings
 
 TEMPERATURE = 0.9
 model_factory = ModelFactory()
 
 class PromptGenerator:
-  def __init__(self, temperature: float = TEMPERATURE, model_name: str = None):
+  def __init__(self, retriever, temperature: float = TEMPERATURE, model_name: str = None):
     self.model_name = model_name
     # self.system_message_prompt = system_message_prompt
     self.temperature = temperature
-    self.num_prompt_candidates = 3
+    self.retriever = retriever
+    self.num_prompt_candidates = Settings.NUMBER_OF_PROMPT_CANDIDATES
 
   def extract_prompts(self, response):
     lines = response.split("\n")
@@ -60,21 +63,24 @@ class PromptGenerator:
         6.The prompt should not contain more than 15 words, make of use of abbreviation wherever possible.
         7.The prompt should not be a verbatim copy of the context.
         8.The prompt should not include double quotes, instead just given it as is.
+        9.The prompt should not include any grammatical errors.
     """
 
 
     human_message_prompt = HumanMessagePromptTemplate.from_template(
         """
-        You are to use these test cases to generate the prompts:
+        You are to use these test cases and the given context to generate the prompts:
         {formatted_test_cases_str}
 
         Here is what the user wants the final prompt to accomplish:
         Task: {description}
+
+        Context: {context_text}
         
         Number of prompts to generate: {num_prompt_candidates}.
 
         ENSURE YOU FOLLOW THIS FORMAT EXACTLY WHEN RETURNING PROMPTS. START WITH 'Prompt:' AND THEN THE PROMPT. 
-        DO NOT INCLUDE ANYTHING ELSE IN YOUR RESPONSE.:
+        DO NOT INCLUDE ANYTHING ELSE IN YOUR RESPONSE EXCEPT THE PROMPTS.:
         Prompt: <Generated Prompt 1>
         Prompt: <Generated Prompt 2>
         Prompt: <Generated Prompt 3>
@@ -102,8 +108,18 @@ class PromptGenerator:
 
     chain = chat_prompt_template | llm | StrOutputParser()
 
+    context_docs = self.retriever.invoke(task_description)
+
+        # Post-processing
+    def format_docs(docs):
+        return "\n\n---\n\n".join(doc.page_content for doc in docs)
+    
+    context_text = format_docs(context_docs)
+
+
     prompt_input_variables = {
         "description": task_description,
+        "context_text": context_text,
         "num_prompt_candidates": self.num_prompt_candidates,
         "formatted_test_cases_str": formatted_test_cases_str
     }

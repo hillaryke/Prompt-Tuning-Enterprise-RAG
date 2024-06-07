@@ -10,7 +10,9 @@ TEMPERATURE = 1.5
 model_factory = ModelFactory(TEMPERATURE)
 
 create_test_case_prompt = """
-        Your job is to create a test case for a given task and it's expected output. The task is a description of a use-case.
+        Your job is to create a test case for a given task and it's expected output given the context. The task is a description of a use-case.
+
+        DO NOT GET OUT OF CONTEXT GIVEN. ONLY STICK WITHIN THE CONTEXT. DO NOT MAKE UP ANYTHING OUTSIDE OF THE CONTEXT.
 
         It should be general enough that it can be used to test the AI's ability to perform the task in retreiving documents.
         It should never actually complete the task, but it should be a good example of the task.
@@ -42,13 +44,17 @@ create_test_case_prompt = """
         * Expected output: The ideal or expected output from the system.
 """
 
-def generate_test_cases(task_description, amount=3):
+def generate_test_cases(task_description, retriever, amount=3):
     """Generates test cases using a language model based on the task description."""
 
     prompt_template = """
-    You are a helpful AI assistant. Please generate {amount} diverse test cases for the following task:
+    You are a helpful AI assistant. Please generate {amount} diverse test cases for the following task given the context:
 
     Task: {description}
+
+    THIS IS THE GIVEN CONTEXT YOU ARE TO USE TO GENERATE THE TEST CASES
+    DO NOT MAKE UP ANYTHING OUTSIDE OF THE CONTEXT.
+    Context: {context}
 
     Each test case should include:
     * Scenario: A clear description of the situation or input to be tested.
@@ -80,7 +86,25 @@ def generate_test_cases(task_description, amount=3):
 
     chain = chat_prompt_template | llm | StrOutputParser()
 
-    generated_text = chain.invoke({"task_description": task_description, "amount": amount})
+
+
+
+    context_docs = retriever.invoke(task_description)
+
+        # Post-processing
+    def format_docs(docs):
+        return "\n\n---\n\n".join(doc.page_content for doc in docs)
+    
+    context_text = format_docs(context_docs)
+
+    prompt_input_variables = {
+        "task_description": task_description, 
+        "context": context_text,
+        "amount": amount
+    }
+
+    generated_text = chain.invoke(prompt_input_variables)
+
 
     test_cases = []
     for case_str in generated_text.split("Scenario:"):
