@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 
 st.title('Prompts Evaluator')
 
@@ -11,19 +12,22 @@ ranked_prompts = [
   ("Describe the unique approach in machine learning that involves learning from a limited number of examples.", 940, 88)
 ]
 
-
 # Add a text box for user input
-user_prompt = st.text_input("Enter you task description or question to get alternative ranked prompts")
+user_prompt = st.text_input("Enter your task description or question to get alternative ranked prompts")
 
 if st.button('Generate Prompts'):
-  # Display the ranked prompts along with the percentage score
-  for i, (prompt, rank, percentage) in enumerate(ranked_prompts, start=1):
-    markdown_header =  (
-        f"<div style='background-color: rgb(37, 39, 42); padding: 10px;'>"
-            f"Prompt #{i} &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;🎯&nbsp;"
-                  f"{percentage}% &nbsp;&nbsp;&nbsp;&nbsp;"
-                  f" | &nbsp;&nbsp;&nbsp;&nbsp; ELO: {rank}"
-        f"</div>"
-    )
-    st.markdown(markdown_header, unsafe_allow_html=True)
-    st.markdown(f"<div style='background-color: rgb(70, 72, 74); padding: 10px;'>{prompt}</div>", unsafe_allow_html=True)
+  with st.spinner('Generating prompts...'):
+    # Add a delay
+    time.sleep(5)
+
+    # Display the ranked prompts along with the percentage score
+    for i, (prompt, rank, percentage) in enumerate(ranked_prompts, start=1):
+      markdown_header =  (
+          f"<div style='background-color: rgb(37, 39, 42); padding: 10px;'>"
+              f"Prompt #{i} &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;🎯&nbsp;"
+                    f"{percentage}% &nbsp;&nbsp;&nbsp;&nbsp;"
+                    f" | &nbsp;&nbsp;&nbsp;&nbsp; ELO: {rank}"
+          f"</div>"
+      )
+      st.markdown(markdown_header, unsafe_allow_html=True)
+      st.markdown(f"<div style='background-color: rgb(70, 72, 74); padding: 10px;'>{prompt}</div>", unsafe_allow_html=True)
