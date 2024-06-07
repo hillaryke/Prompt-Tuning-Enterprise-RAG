@@ -7,3 +7,8 @@ class EmbeddingFactory:
 
   def get_openai_embeddings(self):
     return OpenAIEmbeddings()
+  
+# Embedding model example is OpenAIEmbeddings
+def get_vector_embeddings(text, embedding_model = OpenAIEmbeddings()):
+    """Gets the embedding for a given text."""
+    return embedding_model.embed_query(text)
