@@ -11,6 +11,10 @@ ranked_prompts = [
   ("Describe the unique approach in machine learning that involves learning from a limited number of examples.", 940, 88)
 ]
 
+
+# Add a text box for user input
+user_prompt = st.text_input("Enter you task description or question to get alternative ranked prompts")
+
 if st.button('Generate Prompts'):
   # Display the ranked prompts along with the percentage score
   for i, (prompt, rank, percentage) in enumerate(ranked_prompts, start=1):
