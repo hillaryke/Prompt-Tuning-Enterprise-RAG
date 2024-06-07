@@ -5,8 +5,10 @@ rag-from-scratch-main
 # Data
 *.txt
 *.csv
+*.pdf
 
 **node_modules
+*.sqlite3
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
