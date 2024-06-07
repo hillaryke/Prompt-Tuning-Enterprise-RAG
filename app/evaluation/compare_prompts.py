@@ -10,10 +10,12 @@ from app.utils.chat_models import ModelFactory
 from app.rag.embeddings import get_vector_embeddings
 from app.generator import generate_answer
 from app.rag.embeddings import EmbeddingFactory
+from langchain.embeddings import OpenAIEmbeddings
 
 TEMPERATURE = Settings.TEMPERATURE_GET_PROMPT_WINNER
 model_factory = ModelFactory(TEMPERATURE)
 llm = model_factory.get_chat_openai()
+llm_gemini = model_factory.get_chat_gemini()
 
 embedding_model = EmbeddingFactory().get_openai_embeddings()
 
@@ -34,7 +36,7 @@ def get_score(task_description, test_case, prompt_a, prompt_b, retreiver, embedd
 
     else:  # Use embeddings to calculate similarity
         print("USING COSINE to compare prompts")
-        return comparePromptsUsingCosineSimilarity(test_case, embedding_model)
+        return comparePromptsUsingCosineSimilarity(test_case, embedding_model=OpenAIEmbeddings())
 
 
 def comparePromptsUsingLLM(task_description: str, test_case: TestCase, answer_a: str, answer_b: str):
@@ -43,6 +45,7 @@ def comparePromptsUsingLLM(task_description: str, test_case: TestCase, answer_a:
         """
         Task: {task_description}
         Prompt: {test_case_scenario}
+        Expected output of the Prompt: {test_case_expected_output}
         Generation A: {answer_a}
         Generation B: {answer_b}
         """
@@ -54,7 +57,8 @@ def comparePromptsUsingLLM(task_description: str, test_case: TestCase, answer_a:
 
     prompt_input_variables = {
         "task_description": task_description, 
-        "test_case_scenario": test_case.scenario, 
+        "test_case_scenario": test_case.scenario,
+        "test_case_expected_output": test_case.expected_output,
         "answer_a": answer_a, 
         "answer_b": answer_b
     }
