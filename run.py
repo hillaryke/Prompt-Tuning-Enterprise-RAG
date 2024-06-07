@@ -14,6 +14,12 @@ ranked_prompts = [
 if st.button('Generate Prompts'):
   # Display the ranked prompts along with the percentage score
   for i, (prompt, rank, percentage) in enumerate(ranked_prompts, start=1):
-    st.markdown(f"### Prompt #{i}")
-    st.markdown(f"**ELO Rank:** {rank} | **Percentage Score:** {percentage}%")
-    st.text_area("", value=prompt, height=100, max_chars=None, key=i)
+    markdown_header =  (
+        f"<div style='background-color: rgb(37, 39, 42); padding: 10px;'>"
+            f"Prompt #{i} &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;🎯&nbsp;"
+                  f"{percentage}% &nbsp;&nbsp;&nbsp;&nbsp;"
+                  f" | &nbsp;&nbsp;&nbsp;&nbsp; ELO: {rank}"
+        f"</div>"
+    )
+    st.markdown(markdown_header, unsafe_allow_html=True)
+    st.markdown(f"<div style='background-color: rgb(70, 72, 74); padding: 10px;'>{prompt}</div>", unsafe_allow_html=True)
