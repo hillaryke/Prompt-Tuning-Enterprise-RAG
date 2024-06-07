@@ -4,7 +4,6 @@ from langchain_core.output_parsers import StrOutputParser
 
 
 from app.utils.chat_models import ModelFactory
-from langchain.schema import HumanMessage
 from app.test_cases.models import TestCase
 
 TEMPERATURE = 1.5
@@ -77,21 +76,11 @@ def generate_test_cases(task_description, amount=3):
         """
     )
 
-    # messages = [
-    #     HumanMessage(
-    #         content=prompt_template.format(amount=amount, description=task_description)
-    #     )
-    # ]
-
-    # response = model.invoke(messages)
-    # generated_text = response.content
     chat_prompt_template = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
 
     chain = chat_prompt_template | llm | StrOutputParser()
 
     generated_text = chain.invoke({"task_description": task_description, "amount": amount})
-
-    print(generated_text)
 
     test_cases = []
     for case_str in generated_text.split("Scenario:"):
