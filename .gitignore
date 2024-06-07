@@ -2,7 +2,13 @@ chroma
 data
 rag-from-scratch-main
 
+# Data
+*.txt
+*.csv
+*.pdf
+
 **node_modules
+*.sqlite3
 
 # Data
 *.txt

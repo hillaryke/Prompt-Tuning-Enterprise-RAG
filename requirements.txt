@@ -16,3 +16,17 @@ langchainhub
 tiktoken
 langsmith
 fastapi
+lancedb
+langchain-together
+llama-index
+
+langchain_experimental
+docarray
+pydantic==1.10.8
+ruff
+bs4
+ipytest
+giskard[llm]
+
+python-gemini-api
+streamlit
