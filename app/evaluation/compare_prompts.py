@@ -1,3 +1,4 @@
+import numpy as np
 from app.misc import Settings
 from langchain_core.prompts import SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain.prompts.chat import ChatPromptTemplate
@@ -6,12 +7,35 @@ from app.test_cases import TestCase
 from app.test_cases.generate_test_cases import TEMPERATURE
 from app.utils.chat_models import ModelFactory
 from app.rag.embeddings import get_vector_embeddings
+from app.generator import generate_answer
+from app.rag.embeddings import EmbeddingFactory
 
 TEMPERATURE = Settings.TEMPERATURE_GET_PROMPT_WINNER
 model_factory = ModelFactory(TEMPERATURE)
 llm = model_factory.get_chat_openai()
 
+embedding_model = EmbeddingFactory().get_openai_embeddings()
+
 # TODO - Here we should use gpt-4 or we can try with Gemini
+def get_score(task_description, test_case, prompt_a, prompt_b, retreiver, embedding_model = None, model = None):
+    if embedding_model is None:
+        embedding_model = embedding_model
+    """
+        Calculates the score for a prompt comparison using either using LLM or embedding similarity.
+        Returns 1 if prompt A is better, 0 if prompt B is better, and 0.5 if they are equally good.
+    """
+    answer_a = generate_answer(prompt_a, test_case, retreiver)
+    answer_b = generate_answer(prompt_b, test_case, retreiver)
+
+    if test_case.expected_output.strip():
+        print("USING LLM to compare prompts")
+        return comparePromptsUsingLLM(task_description, test_case, answer_a, answer_b)
+
+    else:  # Use embeddings to calculate similarity
+        print("USING COSINE to compare prompts")
+        return comparePromptsUsingCosineSimilarity(test_case, embedding_model)
+
+
 def comparePromptsUsingLLM(task_description: str, test_case_scenario: str, answer_a: str, answer_b: str):
     system_message_prompt = SystemMessagePromptTemplate.from_template(Settings.RANKING_PROMPT)
     human_message_prompt = HumanMessagePromptTemplate.from_template(
@@ -42,7 +66,8 @@ def comparePromptsUsingLLM(task_description: str, test_case_scenario: str, answe
         winner = chain.invoke(prompt_input_variables)
     return 1 if winner == 'A' else 0 if winner == 'B' else 0.5 
 
-def comparePromptsUsingCosineSimilarity(test_case, embedding_model):
+
+def comparePromptsUsingCosineSimilarity(answer_a, answer_b, test_case, embedding_model):
     embedding_a = get_vector_embeddings(answer_a, embedding_model)
     embedding_b = get_vector_embeddings(answer_b, embedding_model)
     embedding_expected = get_vector_embeddings(test_case.expected_output, embedding_model)
@@ -55,3 +80,11 @@ def comparePromptsUsingCosineSimilarity(test_case, embedding_model):
         return 0.5  # Draw
 
     return 1 if score_a > score_b else 0  # Return 1 if A wins, 0 if B wins
+
+
+def cosine_similarity(a: np.ndarray, b: np.ndarray):
+    """
+        Calculates the cosine similarity between two vector embeddings a and b.
+        Returns a float value between -1 and 1.
+    """
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
