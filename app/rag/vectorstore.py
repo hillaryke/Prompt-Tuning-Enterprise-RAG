@@ -35,8 +35,11 @@ class VectorStore:
     retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
     return retriever
 
-  def retrieve_context(self, query):
+  def retrieve_context(self, query, retriever=None):
     """Retrieves relevant context for a given query from your knowledge base or documents."""
+    if retriever is not None:
+      self.retriever = retriever
+      
     if self.retriever is None:
       raise Exception("Retriever is not initialized. Call get_retriever first.")
     docs = self.retriever.invoke(query)

@@ -21,3 +21,8 @@ def save_to_chroma(docs: list[Document]):
     vectorstore = Chroma.from_documents(documents=docs, embedding=OpenAIEmbeddings())
     retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
     return retriever
+
+def retrieve_context(query, retriever):
+    """Retrieves relevant context for a given query from your knowledge base or documents."""
+    docs = retriever.invoke(query)
+    return docs
