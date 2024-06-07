@@ -2,6 +2,8 @@ from typing import Final
 from langchain.chains.query_constructor.base import AttributeInfo
 
 class Settings:
+    TEMPERATURE_GET_PROMPT_WINNER: Final = 0
+
     HEADERS_TO_SPLIT: Final = [
         ("#", "Topic Header"),
         ("##", "Subtopic Header"),
