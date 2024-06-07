@@ -11,10 +11,8 @@ model_factory = ModelFactory(TEMPERATURE)
 llm = model_factory.get_chat_openai()
 
 # TODO - Here we should use gpt-4 or we can try with Gemini
-def get_winner(answer_a: str, answer_b: str, task_description: str, test_case_scenario: str):
+def comparePromptsUsingLLM(task_description: str, test_case_scenario: str, answer_a: str, answer_b: str):
     system_message_prompt = SystemMessagePromptTemplate.from_template(Settings.RANKING_PROMPT)
-
-    # LLM Judgment (if no expected output is provided)
     human_message_prompt = HumanMessagePromptTemplate.from_template(
         """
         Task: {task_description}
@@ -29,12 +27,17 @@ def get_winner(answer_a: str, answer_b: str, task_description: str, test_case_sc
     chain = chat_prompt_template | llm | StrOutputParser()
 
     prompt_input_variables = {
-      "task_description": task_description, 
-      "test_case_scenario": test_case_scenario, 
-      "answer_a": answer_a, 
-      "answer_b": answer_b
+        "task_description": task_description, 
+        "test_case_scenario": test_case_scenario, 
+        "answer_a": answer_a, 
+        "answer_b": answer_b
     }
 
     winner = chain.invoke(prompt_input_variables)
 
-    return winner
+    while winner not in ['A', 'B', 'DRAW']:
+        print("Invalid input from the model. Please try generating again.")
+
+        winner = chain.invoke(prompt_input_variables)
+    return 1 if winner == 'A' else 0 if winner == 'B' else 0.5 
+
