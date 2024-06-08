@@ -1,40 +1,13 @@
 from typing import Final
-from langchain.chains.query_constructor.base import AttributeInfo
 
 class Settings:
     TEMPERATURE_GET_PROMPT_WINNER: Final = 0
 
     NUMBER_OF_PROMPT_CANDIDATES: Final = 3
 
-    HEADERS_TO_SPLIT: Final = [
-        ("#", "Topic Header"),
-        ("##", "Subtopic Header"),
-        ("###", "Paragraph Header")
-    ]
-
-    METADATA_INFO: Final = [
-        AttributeInfo(
-            name="Title",
-            description="Part of the document where the text was taken from",
-            type="string or list[string]",
-        ),
-    ]
-
-    CONTENT_DESCRIPTION: Final = "Description of banking products"
-
-    PROMT_TEMPLATE: Final = """
-    You are an assistant who answers user questions.
-    Use fragments of the received context to answer the question.
-    If you don't know the answer, say that you don't know, don't make up an answer.
-    Use a maximum of three sentences and be concise.\n
-    Question: {question} \n
-    Context: {context} \n
-    Answer:
-    """
-
-    BM25_K: Final = 2
-    MMR_K: Final = 2
-    MMR_FETCH_K: Final = 5
+    # ELO Ranking System Settings
+    ELO_RANK_INITIAL = 1000
+    ELO_RANK_K_FACTOR = 32
 
     CREATE_TEST_CASES_SYSTEM_PROMPT = """
             Your job is to create a test case for a given task and it's expected output given the context. The task is a description of a use-case.

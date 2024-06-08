@@ -1,9 +1,10 @@
+from app.misc.settings import Settings
 from app.test_cases import TestCase
 from app.evaluation import get_score
 
 class EloRanker:
-  INITIAL_ELO_RANK = 1000
-  K_FACTOR = 32
+  INITIAL_ELO_RANK = Settings.ELO_RANK_INITIAL
+  ELO_RANK_K_FACTOR = Settings.ELO_RANK_K_FACTOR
 
   def __init__(self, task_description: str, prompt_candidates, test_case: TestCase, retriever, model=None, embedding_model=None):
     self.task_description = task_description
@@ -14,7 +15,7 @@ class EloRanker:
     self.retriever = retriever
     self.elo_ranks = {prompt: self.INITIAL_ELO_RANK for prompt in self.prompt_candidates}
 
-  def calculate_elo_rank(self, player_a_rank, player_b_rank, score, k=32):
+  def calculate_elo_rank(self, player_a_rank, player_b_rank, score, k=ELO_RANK_K_FACTOR):
     """
     Calculate the new Elo rank of a player based on the score of a game.
     
