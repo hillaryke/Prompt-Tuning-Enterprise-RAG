@@ -18,8 +18,8 @@ def generate_ranked_prompts(task_description):
 
   # Use a hard coded test case
   # TODO - Use all the test cases to compare the prompts and rank them
-  test_case = test_cases[0]
+  # test_case = test_cases[0]
 
-  ranked_prompts = rank_prompts_with_elo(task_description, prompt_candidates, test_case, retriever)
+  ranked_prompts = rank_prompts_with_elo(task_description, prompt_candidates, test_cases, retriever)
   
   return ranked_prompts
