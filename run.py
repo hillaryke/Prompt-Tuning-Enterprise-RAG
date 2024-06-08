@@ -5,7 +5,7 @@ os.chdir("./")
 
 from app import generate_ranked_prompts
 
-st.title('Prompts Evaluator')
+st.title('Automatic Prompts Generator')
 
 # Hardcoded ranked prompts
 # ranked_prompts = [
