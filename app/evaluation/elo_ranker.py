@@ -1,4 +1,5 @@
 from app.misc.settings import Settings
+from typing import List
 from app.test_cases import TestCase
 from app.evaluation import get_score
 
@@ -6,10 +7,10 @@ class EloRanker:
   INITIAL_ELO_RANK = Settings.ELO_RANK_INITIAL
   ELO_RANK_K_FACTOR = Settings.ELO_RANK_K_FACTOR
 
-  def __init__(self, task_description: str, prompt_candidates, test_case: TestCase, retriever, model=None, embedding_model=None):
+  def __init__(self, task_description: str, prompt_candidates, test_cases: List[TestCase], retriever, model=None, embedding_model=None):
     self.task_description = task_description
     self.prompt_candidates = prompt_candidates
-    self.test_case = test_case
+    self.test_cases = test_cases
     self.model = model
     self.embedding_model = embedding_model
     self.retriever = retriever
@@ -33,19 +34,20 @@ class EloRanker:
     return new_rank_a
 
   def calculate_elo_ranks(self):
-    for i in range(len(self.prompt_candidates)):
-      for j in range(i + 1, len(self.prompt_candidates)):
-        score = get_score(
-                    self.task_description,
-                    self.test_case, 
-                    self.prompt_candidates[i],
-                    self.prompt_candidates[j],
-                    self.retriever
-                  )
-        new_rank_i = self.calculate_elo_rank(self.elo_ranks[self.prompt_candidates[i]], self.elo_ranks[self.prompt_candidates[j]], score)
-        new_rank_j = self.calculate_elo_rank(self.elo_ranks[self.prompt_candidates[j]], self.elo_ranks[self.prompt_candidates[i]], 1 - score)
-        self.elo_ranks[self.prompt_candidates[i]] = new_rank_i
-        self.elo_ranks[self.prompt_candidates[j]] = new_rank_j
+    for test_case in self.test_cases:
+      for i in range(len(self.prompt_candidates)):
+        for j in range(i + 1, len(self.prompt_candidates)):
+          score = get_score(
+                      self.task_description,
+                      test_case, 
+                      self.prompt_candidates[i],
+                      self.prompt_candidates[j],
+                      self.retriever
+                    )
+          new_rank_i = self.calculate_elo_rank(self.elo_ranks[self.prompt_candidates[i]], self.elo_ranks[self.prompt_candidates[j]], score)
+          new_rank_j = self.calculate_elo_rank(self.elo_ranks[self.prompt_candidates[j]], self.elo_ranks[self.prompt_candidates[i]], 1 - score)
+          self.elo_ranks[self.prompt_candidates[i]] = new_rank_i
+          self.elo_ranks[self.prompt_candidates[j]] = new_rank_j
 
   def rank_prompts(self):
     highest_rank = max(self.elo_ranks.values())
