@@ -1,4 +1,4 @@
-.PHONY: install setup all
+.PHONY: install setup all test
 
 run:
 	python3.9 main.py
@@ -10,5 +10,8 @@ install:
 
 setup:
 	echo "\nPROJECT_PATH=$(shell pwd)" >> .env
+
+test:
+	python -m unittest discover -s tests -p 'test*.py'
 
 all: install setup
