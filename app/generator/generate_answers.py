@@ -4,6 +4,7 @@ from langchain.prompts.chat import ChatPromptTemplate
 from app.utils.chat_models import ModelFactory
 from app.rag.vectorstore import VectorStore
 from app.test_cases import TestCase
+from app.utils.docs_utils import format_docs_to_text
 
 ANSWER_GENERATION_TEMPERATURE = 0.7
 model_factory = ModelFactory(
@@ -11,7 +12,7 @@ model_factory = ModelFactory(
                     openai_model_name="gpt-3.5-turbo"
                   )
 
-def generate_answer(prompt_candidate: str, testCase: TestCase, retriever, model = None):
+def generate_answer(prompt_candidate: str, test_case: TestCase, retriever, model = None):
     """Generates a response using the provided prompt and test case."""
 
     prompt_template = ChatPromptTemplate.from_template(
@@ -24,17 +25,20 @@ def generate_answer(prompt_candidate: str, testCase: TestCase, retriever, model 
         Answer:"""
     )
 
-    vectorstore = VectorStore()
-    
-    context = vectorstore.retrieve_context(testCase.scenario, retriever) # get the context documents 
-
-    # Create RAG chain for current prompt
-    # rag_chain = create_rag_chain_factory(prompt, vectorstore)
+    context_docs = retriever.invoke(test_case.scenario)
+    context_text = format_docs_to_text(context_docs)
 
     llm = model_factory.get_chat_openai()
 
+    prompt_input_variables = {
+        "context": context_text, 
+        "prompt_candidate": prompt_candidate, 
+        "scenario": test_case.scenario
+    }
+
     chain = prompt_template | llm | StrOutputParser()
+
     # Generate answer from RAG chain
-    answer = chain.invoke({"context": context, "prompt_candidate": prompt_candidate, "scenario": testCase.scenario})
+    answer = chain.invoke(prompt_input_variables)
 
     return answer
