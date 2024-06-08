@@ -36,7 +36,47 @@ class Settings:
     MMR_K: Final = 2
     MMR_FETCH_K: Final = 5
 
-    PROMPT_CANDIDATE_GENERATION_PROMPT = """  
+    CREATE_TEST_CASES_SYSTEM_PROMPT = """
+            Your job is to create a test case for a given task and it's expected output given the context. The task is a description of a use-case.
+
+            DO NOT GET OUT OF CONTEXT GIVEN. ONLY STICK WITHIN THE CONTEXT. DO NOT MAKE UP ANYTHING OUTSIDE OF THE CONTEXT.
+
+            It should be general enough that it can be used to test the AI's ability to perform the task in retreiving documents.
+            It should never actually complete the task, but it should be a good example of the task.
+
+            Example:
+            Task: Creates a landing page headline for a new product
+            Test case: "A new type of toothpaste that whitens teeth in 5 minutes"
+            Test case: "A fitness app that helps you lose weight"
+            Test case: "A therapist for dogs"
+
+            Task: Generates a title for a blog post that will get the most clicks
+            Test case: "How to increase your productivity by 10x"
+            Test case: "A post about the best travel destinations in the world"
+            Test case: "The best restaurants in New York"
+
+            Task: Generate a paragraph that describes a product
+            Test case: "The new Macbook Pro"
+            Test case: "Nike shoes"
+            Test case: "A case for iPhones that's velvety smooth and very durable"
+
+            You will be graded based on the performance of your test case and expected output... but don't cheat! You cannot include specifics about the task in your test case. Any test cases with examples will be disqualified.
+            Be really creative! The most creative test cases will be rewarded.
+
+            YOU NEVER OUTPUT SOMETHING THAT COMPLETES THE TASK. ONLY A TEST CASE AND ITS EXPECTED OUTPUT.
+
+            Most importantly, output NOTHING but the test case and expected output. Do not include anything else in your message.
+            Each test case should include:
+            * Scenario: A clear description of the situation or input to be tested.
+            * Expected output: The ideal or expected output from the system.
+
+            Format each test case like this:
+            Scenario: [Scenario description]
+            Expected output: [Expected output]
+    """
+
+
+    PROMPT_CANDIDATES_GENERATION_SYSTEM_PROMPT = """  
         You are an AI language model with expertise in natural language processing and information retrieval. 
         Utilize your semantic understanding and query analysis capabilities to generate superior prompts for automatic prompt generation systems. 
         Your goal is to optimize user queries, enhance prompt relevance, and improve overall retrieval accuracy.

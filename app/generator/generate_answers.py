@@ -1,12 +1,6 @@
-import asyncio
-from langchain.chat_models import ChatOpenAI
-from langchain.schema import HumanMessage, SystemMessage, Document
-from langchain.embeddings import OpenAIEmbeddings
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough
 
 from langchain.prompts.chat import ChatPromptTemplate
-from app.rag import vectorstore
 from app.utils.chat_models import ModelFactory
 from app.rag.vectorstore import VectorStore
 from app.test_cases import TestCase
