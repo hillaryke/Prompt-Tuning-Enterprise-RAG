@@ -1,7 +1,7 @@
 import argparse
 from dataclasses import dataclass
 from langchain_community.vectorstores.chroma import Chroma
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 

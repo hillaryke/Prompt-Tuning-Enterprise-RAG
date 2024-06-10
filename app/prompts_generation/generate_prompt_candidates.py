@@ -21,7 +21,6 @@ human_message_prompt = """
 class PromptGenerator:
   def __init__(self, retriever, temperature: float = TEMPERATURE, model_name: str = None):
     self.model_name = model_name
-    # self.system_message_prompt = system_message_prompt
     self.temperature = temperature
     self.retriever = retriever
     self.num_prompt_candidates = Settings.NUMBER_OF_PROMPT_CANDIDATES
