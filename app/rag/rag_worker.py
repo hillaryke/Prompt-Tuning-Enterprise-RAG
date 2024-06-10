@@ -5,7 +5,7 @@ from app.rag.docs_loader import load_and_split_markdown, load_and_split_md
 from app.rag.chroma_vectorstore import get_retriever
 from app.misc import Settings
 
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.schema import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough, RunnableParallel
 from langchain.prompts.chat import ChatPromptTemplate, SystemMessagePromptTemplate
