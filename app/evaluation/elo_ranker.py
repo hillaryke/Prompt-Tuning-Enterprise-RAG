@@ -7,10 +7,10 @@ from numpy import mean, std
 from scipy.stats import norm
 
 class EloRanker:
-  INITIAL_ELO_RANK = 1500
-  SD = 200
-  LEARNING_RATE = 0.6
-  BATTLE_VALUE = 30
+  INITIAL_ELO_RANK = Settings.INITIAL_ELO_RANK
+  SD = Settings.SD_ELO
+  LEARNING_RATE = Settings.LEARNING_RATE
+  BATTLE_VALUE = Settings.BATTLE_VALUE
 
   def __init__(self, task_description: str, prompt_candidates, test_cases: List[TestCase], retriever, model=None, embedding_model=None):
     self.task_description = task_description
@@ -71,6 +71,14 @@ class EloRanker:
 
       self.run_battle(candidateA, candidateB)
 
-
   def rank_prompts(self):
-    return sorted(self.prompt_candidates, key=lambda prompt: self.elo_ranks[prompt], reverse=True)
+    highest_rank = max(self.elo_ranks.values())
+    ranked_prompts = [
+        (
+            prompt, 
+            int(self.elo_ranks[prompt]), 
+            int(self.elo_ranks[prompt] / highest_rank * 100)
+        ) for prompt in self.prompt_candidates]
+    
+    ranked_prompts.sort(key=lambda x: x[1], reverse=True)
+    return ranked_prompts
