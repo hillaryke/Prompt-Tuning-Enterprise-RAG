@@ -10,7 +10,7 @@ from app.utils.chat_models import ModelFactory
 from app.rag.embeddings import get_vector_embeddings
 from app.generator import generate_answer
 from app.rag.embeddings import EmbeddingFactory
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_community.embeddings import OpenAIEmbeddings
 
 TEMPERATURE = Settings.TEMPERATURE_GET_PROMPT_WINNER
 model_factory = ModelFactory(TEMPERATURE)
@@ -20,9 +20,20 @@ llm_gemini = model_factory.get_chat_gemini()
 embedding_model = EmbeddingFactory().get_openai_embeddings()
 
 # TODO - Here we should use gpt-4 or we can try with Gemini
+# Define the cache as a dictionary outside the function
+cache = {}
+
 def get_score(task_description, test_case, prompt_a, prompt_b, retreiver, embedding_model = None, model = None):
     if embedding_model is None:
         embedding_model = embedding_model
+
+    # Generate a unique key for the pair of prompts
+    key = (task_description, test_case, prompt_a, prompt_b)
+
+    # If the result is in the cache, return it
+    if key in cache:
+        return cache[key]
+
     """
         Calculates the score for a prompt comparison using either using LLM or embedding similarity.
         Returns 1 if prompt A is better, 0 if prompt B is better, and 0.5 if they are equally good.
@@ -32,12 +43,14 @@ def get_score(task_description, test_case, prompt_a, prompt_b, retreiver, embedd
 
     if test_case.expected_output.strip():
         print("USING LLM to compare prompts")
-        return comparePromptsUsingLLM(task_description, test_case, answer_a, answer_b)
-
+        score = comparePromptsUsingLLM(task_description, test_case, answer_a, answer_b)
     else:  # Use embeddings to calculate similarity
         print("USING COSINE to compare prompts")
-        return comparePromptsUsingCosineSimilarity(test_case, embedding_model=OpenAIEmbeddings())
+        score = comparePromptsUsingCosineSimilarity(test_case, embedding_model=OpenAIEmbeddings())
 
+    # Store the score in the cache before returning it
+    cache[key] = score
+    return score
 
 def comparePromptsUsingLLM(task_description: str, test_case: TestCase, answer_a: str, answer_b: str):
     system_message_prompt = SystemMessagePromptTemplate.from_template(Settings.RANKING_PROMPT)
