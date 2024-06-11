@@ -6,8 +6,15 @@ class Settings:
     NUMBER_OF_PROMPT_CANDIDATES: Final = 3
 
     # ELO Ranking System Settings
-    ELO_RANK_INITIAL = 1000
+    INITIAL_ELO_RANK = 1000
     ELO_RANK_K_FACTOR = 32
+    SD_ELO = 200
+    LEARNING_RATE = 0.6
+
+    # Monte Carlo Simulation Settings
+    MONTE_CARLO_SAMPLE_AMOUNT = 1000
+    NUMBER_OF_BATTLES = 2
+    BATTLE_VALUE = 30
 
     CREATE_TEST_CASES_SYSTEM_PROMPT = """
             Your job is to create a test case for a given task and it's expected output given the context. The task is a description of a use-case.

@@ -5,12 +5,20 @@ from app.evaluation import get_score
 import random
 from numpy import mean, std
 from scipy.stats import norm
+from rich.logging import RichHandler
+import logging
+from rich.console import Console
+
+# Setup the logger
+# FORMAT = "%(message)s"
+# logging.basicConfig(level="INFO", format=FORMAT, datefmt="[%X]", handlers=[RichHandler()])
+console = Console()
 
 class EloRanker:
-  INITIAL_ELO_RANK = 1500
-  SD = 200
-  LEARNING_RATE = 0.6
-  BATTLE_VALUE = 30
+  INITIAL_ELO_RANK = Settings.INITIAL_ELO_RANK
+  SD = Settings.SD_ELO
+  LEARNING_RATE = Settings.LEARNING_RATE
+  BATTLE_VALUE = Settings.BATTLE_VALUE
 
   def __init__(self, task_description: str, prompt_candidates, test_cases: List[TestCase], retriever, model=None, embedding_model=None):
     self.task_description = task_description
@@ -46,6 +54,8 @@ class EloRanker:
     return distribution
 
   def run_battle(self, candidateA, candidateB):
+    console.print(f"[green]Running battle between {candidateA} and {candidateB}")
+
     total_score = 0
     for test_case in self.test_cases:
       score = get_score(self.task_description, test_case, candidateA, candidateB, self.retriever)  # Use the imported function here
@@ -61,6 +71,8 @@ class EloRanker:
 
     self.sd[candidateA] = max(self.sd[candidateA] * self.LEARNING_RATE, 125)
     self.sd[candidateB] = max(self.sd[candidateB] * self.LEARNING_RATE, 125)
+    console.print(f"[blue]Battle ended. New ratings: {candidateA}: {newRatingA}, {candidateB}: {newRatingB}")
+
 
   def run_simulation(self, num_battles, sample_amount):
     for _ in range(num_battles):
@@ -71,6 +83,14 @@ class EloRanker:
 
       self.run_battle(candidateA, candidateB)
 
-
   def rank_prompts(self):
-    return sorted(self.prompt_candidates, key=lambda prompt: self.elo_ranks[prompt], reverse=True)
+    highest_rank = max(self.elo_ranks.values())
+    ranked_prompts = [
+        (
+            prompt, 
+            int(self.elo_ranks[prompt]), 
+            int(self.elo_ranks[prompt] / highest_rank * 100)
+        ) for prompt in self.prompt_candidates]
+    
+    ranked_prompts.sort(key=lambda x: x[1], reverse=True)
+    return ranked_prompts
