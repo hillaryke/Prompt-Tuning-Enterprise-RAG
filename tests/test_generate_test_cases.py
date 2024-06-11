@@ -2,6 +2,8 @@ import unittest
 from unittest.mock import patch, MagicMock
 from app.test_cases.generate_test_cases import generate_test_cases
 from app.test_cases.models import TestCase
+from app.rag.loaders.load_web_docs import load_docs_from_web
+
 
 class TestGenerateTestCases(unittest.TestCase):
   # @patch('app.utils.chat_models.ChatOpenAI')
@@ -23,7 +25,9 @@ class TestGenerateTestCases(unittest.TestCase):
     task_description = "What is few shot learning."
     amount = 3
 
-    test_cases = generate_test_cases(task_description, amount)
+    retriever = load_docs_from_web()
+
+    test_cases = generate_test_cases(task_description, retriever, amount)
 
     # Check that the correct number of test cases were generated
     self.assertEqual(len(test_cases), amount)
